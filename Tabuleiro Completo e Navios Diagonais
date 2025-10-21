@@ -1,0 +1,57 @@
+#include <stdio.h>
+
+// Tamanho do tabuleiro
+#define TAM 10
+#define NAVIO 3
+#define AGUA 0
+
+int main() {
+    int tabuleiro[TAM][TAM] = {0}; // Inicializa tudo com 0 (água)
+    int i, j;
+
+    // ==============================
+    // Posicionando Navios Horizontais e Verticais
+    // ==============================
+
+    // Navio 1 - Horizontal (linha 2, colunas 1 a 3)
+    for (j = 1; j <= 3; j++) {
+        tabuleiro[2][j] = NAVIO;
+    }
+
+    // Navio 2 - Vertical (coluna 7, linhas 5 a 7)
+    for (i = 5; i <= 7; i++) {
+        tabuleiro[i][7] = NAVIO;
+    }
+
+    // ==============================
+    // Posicionando Navios Diagonais
+    // ==============================
+
+    // Navio 3 - Diagonal principal (i == j)
+    for (i = 0; i < 3; i++) {
+        tabuleiro[i][i] = NAVIO;
+    }
+
+    // Navio 4 - Diagonal secundária (i + j == 9)
+    for (i = 7; i < 10; i++) {
+        int j = 9 - i; // Faz o espelhamento diagonal
+        tabuleiro[i][j] = NAVIO;
+    }
+
+    // ==============================
+    // Exibindo o Tabuleiro
+    // ==============================
+
+    printf("=== TABULEIRO DE BATALHA NAVAL ===\n\n");
+
+    for (i = 0; i < TAM; i++) {
+        for (j = 0; j < TAM; j++) {
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\nLegenda:\n0 = Água\n3 = Navio\n");
+
+    return 0;
+}
