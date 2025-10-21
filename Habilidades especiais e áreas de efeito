@@ -1,0 +1,110 @@
+#include <stdio.h>
+
+#define TAM 10    // Tamanho do tabuleiro
+#define NAVIO 3   // Representa os navios
+#define AGUA 0    // Representa a água
+#define HABIL 5   // Representa a área afetada por habilidades
+
+#define TAM_HAB 5 // Tamanho das matrizes de habilidade (5x5)
+
+// Função para exibir o tabuleiro no console
+void exibirTabuleiro(int tabuleiro[TAM][TAM]) {
+    printf("\n=== TABULEIRO DE BATALHA NAVAL ===\n\n");
+    for (int i = 0; i < TAM; i++) {
+        for (int j = 0; j < TAM; j++) {
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\nLegenda:\n0 = Água\n3 = Navio\n5 = Área de Habilidade\n\n");
+}
+
+// Função genérica para aplicar uma matriz de habilidade ao tabuleiro
+void aplicarHabilidade(int tabuleiro[TAM][TAM], int habilidade[TAM_HAB][TAM_HAB], int origemLinha, int origemColuna) {
+    int meio = TAM_HAB / 2; // Centro da matriz de habilidade
+
+    for (int i = 0; i < TAM_HAB; i++) {
+        for (int j = 0; j < TAM_HAB; j++) {
+            if (habilidade[i][j] == 1) {
+                int linha = origemLinha - meio + i;
+                int coluna = origemColuna - meio + j;
+
+                // Verifica se está dentro dos limites do tabuleiro
+                if (linha >= 0 && linha < TAM && coluna >= 0 && coluna < TAM) {
+                    if (tabuleiro[linha][coluna] == AGUA) {
+                        tabuleiro[linha][coluna] = HABIL; // Marca a área afetada
+                    }
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    int tabuleiro[TAM][TAM] = {0}; // Inicializa com água (0)
+    int i, j;
+
+    // ==============================
+    // POSICIONAMENTO DOS NAVIOS
+    // ==============================
+
+    // Navio 1 (horizontal)
+    for (j = 2; j < 5; j++) tabuleiro[1][j] = NAVIO;
+
+    // Navio 2 (vertical)
+    for (i = 4; i < 7; i++) tabuleiro[i][6] = NAVIO;
+
+    // Navio 3 (diagonal principal)
+    for (i = 0; i < 3; i++) tabuleiro[i][i] = NAVIO;
+
+    // Navio 4 (diagonal secundária)
+    for (i = 7; i < 10; i++) tabuleiro[i][9 - i] = NAVIO;
+
+    // ==============================
+    // CRIANDO AS MATRIZES DE HABILIDADES
+    // ==============================
+
+    int cone[TAM_HAB][TAM_HAB] = {0};
+    int cruz[TAM_HAB][TAM_HAB] = {0};
+    int octaedro[TAM_HAB][TAM_HAB] = {0};
+
+    // --- Habilidade em CONE (ponta no topo, abre para baixo) ---
+    for (i = 0; i < TAM_HAB; i++) {
+        for (j = 0; j < TAM_HAB; j++) {
+            if (j >= TAM_HAB / 2 - i && j <= TAM_HAB / 2 + i && i <= TAM_HAB / 2)
+                cone[i][j] = 1;
+        }
+    }
+
+    // --- Habilidade em CRUZ (linhas central e coluna central) ---
+    for (i = 0; i < TAM_HAB; i++) {
+        for (j = 0; j < TAM_HAB; j++) {
+            if (i == TAM_HAB / 2 || j == TAM_HAB / 2)
+                cruz[i][j] = 1;
+        }
+    }
+
+    // --- Habilidade em OCTAEDRO (formato de losango) ---
+    for (i = 0; i < TAM_HAB; i++) {
+        for (j = 0; j < TAM_HAB; j++) {
+            if (abs(i - TAM_HAB / 2) + abs(j - TAM_HAB / 2) <= TAM_HAB / 2)
+                octaedro[i][j] = 1;
+        }
+    }
+
+    // ==============================
+    // APLICANDO HABILIDADES AO TABULEIRO
+    // ==============================
+
+    aplicarHabilidade(tabuleiro, cone, 2, 2);       // Cone com origem em (2,2)
+    aplicarHabilidade(tabuleiro, cruz, 5, 5);       // Cruz com origem em (5,5)
+    aplicarHabilidade(tabuleiro, octaedro, 7, 7);   // Octaedro com origem em (7,7)
+
+    // ==============================
+    // EXIBIÇÃO FINAL DO TABULEIRO
+    // ==============================
+
+    exibirTabuleiro(tabuleiro);
+
+    return 0;
+}
